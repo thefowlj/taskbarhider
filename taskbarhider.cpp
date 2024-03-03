@@ -1,3 +1,8 @@
+/**
+ * @file taskbarhider.cpp
+ * @brief A program to hide or show the Windows taskbar.
+ */
+
 #include <windows.h>
 #include <thread>
 #include <chrono>
@@ -10,7 +15,7 @@ using namespace std;
  * 
  * @return true if the taskbar is visible, false otherwise.
  */
-boolean isTaskbarVisible() {
+bool isTaskbarVisible() {
     // Get a handle to the taskbar and secondary taskbar windows
     HWND hwnd = FindWindow(TEXT("Shell_traywnd"), NULL);
     HWND hwnd2 = FindWindow(TEXT("Shell_SecondaryTrayWnd"), NULL);
@@ -20,11 +25,11 @@ boolean isTaskbarVisible() {
 }
 
 /**
- * Hides or shows the taskbar.
+ * @brief Hides or shows the taskbar.
  *
  * @param hide - A boolean value indicating whether to hide or show the taskbar.
  */
-void hideTaskbar(boolean hide) {
+void hideTaskbar(bool hide) {
     // Get a handle to the taskbar and secondary taskbar windows
     HWND hwnd = FindWindow(TEXT("Shell_traywnd"), NULL);
     HWND hwnd2 = FindWindow(TEXT("Shell_SecondaryTrayWnd"), NULL);
@@ -41,12 +46,39 @@ void hideTaskbar(boolean hide) {
     }
 }
 
+/**
+ * @brief The main function of the program.
+ *
+ * @param argc The number of command-line arguments.
+ * @param argv An array of command-line arguments. argv[0] is the program name, argv[1] is the first argument, and so on.
+ *             The following command-line arguments are supported:
+ *             - "-hide": Hides the taskbar.
+ *             - "-show": Shows the taskbar.
+ * @return The exit status of the program.
+ */
+int main(int argc, char* argv[]) {
+    bool hide = false;
+    bool force = false;
 
-int main() {
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-hide") == 0) {
+            force = true;
+            hide = true;
+        } else if (strcmp(argv[i], "-show") == 0) {
+            force = true;
+            hide = false;
+        } 
+    }
+
     // Get a handle to the taskbar and secondary taskbar windows
     HWND hwnd = FindWindow(TEXT("Shell_traywnd"), NULL);
     HWND hwnd2 = FindWindow(TEXT("Shell_SecondaryTrayWnd"), NULL);
 
+    if (force) {
+        hideTaskbar(hide);
+        return 0;
+    }
+    
     // If the taskbar is visible, hide it; otherwise, show it
     if (isTaskbarVisible()) {
         hideTaskbar(true);
